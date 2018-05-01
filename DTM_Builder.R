@@ -28,7 +28,7 @@ text_Cleaner <- function(c,remove_stopwords= T,remove_numbers = T){
 }
 
 dtm_Builer <- function(x,min_tok=1,max_tok=2,TFIDF = T,min_word_len=3,min_bound = 1){
-  Tokenizer <- function(x) NGramTokenizer(x, Weka_control(min = min_tok, max = max_tok))
+  Tokenizer <- function(x) NGramTokenizer(x, Weka_control(min = min_tok, max = max_tok)) %>% tokenize_ptb(x)
   dtm_ngram <- DocumentTermMatrix(x, control = list(tokenize = Tokenizer,
                                                     removePunctuation = TRUE,
                                                     weighting =if(TFIDF){function(x)weightTfIdf(x, normalize =FALSE)} else {function(x)weightTf(x)}, 
@@ -41,7 +41,7 @@ dtm_Builer <- function(x,min_tok=1,max_tok=2,TFIDF = T,min_word_len=3,min_bound 
 }
 
 wordCloudBuilder<- function(dtm,mf =1,mw =100,ro = F,plot.title = "wordCloud"){
-  dtm.matrix <- as.matrix(dtm_ngram)
+  dtm.matrix <- as.matrix(dtm)
   wordcount <- colSums(dtm.matrix)
   wordcloud(words = names(wordcount),wordcount, min.freq = 1,
             max.words=100, random.order=FALSE, rot.per=0.35, 

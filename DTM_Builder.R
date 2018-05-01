@@ -28,7 +28,7 @@ text_Cleaner <- function(c,remove_stopwords= T,remove_numbers = T){
 }
 
 dtm_Builer <- function(x,min_tok=1,max_tok=2,TFIDF = T,min_word_len=3,min_bound = 1){
-  Tokenizer <- function(x) NGramTokenizer(x, Weka_control(min = min_tok, max = max_tok)) %>% tokenize_ptb(x)
+  Tokenizer <- function(x) NGramTokenizer(x, Weka_control(min = min_tok, max = max_tok))
   dtm_ngram <- DocumentTermMatrix(x, control = list(tokenize = Tokenizer,
                                                     removePunctuation = TRUE,
                                                     weighting =if(TFIDF){function(x)weightTfIdf(x, normalize =FALSE)} else {function(x)weightTf(x)}, 

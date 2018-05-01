@@ -37,6 +37,7 @@ dtm_Builer <- function(x,min_tok=1,max_tok=2,TFIDF = T,min_word_len=3,min_bound 
                                                     bounds=list(local=c(min_bound,Inf)),
                                                     stopwords = T
   ))
+  return(dtm_ngram)
 }
 
 wordCloudBuilder<- function(dtm,mf =1,mw =100,ro = F,plot.title = "wordCloud"){

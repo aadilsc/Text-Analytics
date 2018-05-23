@@ -48,3 +48,44 @@ wordCloudBuilder<- function(dtm,mf =1,mw =100,ro = F,plot.title = "wordCloud"){
             colors=brewer.pal(8, "Dark2"))
   title(sub = plot.title)
 }
+
+COG = function(dtm, title="COG",central.nodes=4,max.connexns = 5){
+  
+  library(igraph)
+  
+  dtm_1 = as.matrix(dtm)   
+  adj_mat = t(dtm_1) %*% dtm_1
+  diag(adj_mat) = 0   
+  mat_2 = order(apply(adj_mat, 2, sum), decreasing = T)   
+  mat_final = as.matrix(adj_mat[mat_2[1:50], mat_2[1:50]])
+  
+  cs= colSums(mat_final) 
+  csr = order(-cs)   
+  
+  mat_ordered = mat_final[csr, csr]   
+  diag(mat_ordered) =  0
+  
+  wc = NULL
+  
+  for (i in 1:central.nodes){ 
+    thresh = mat_ordered[i,][order(-mat_ordered[i, ])[max.connexns]]
+    mat_ordered[i, mat_ordered[i,] < thresh] = 0   
+    mat_ordered[i, mat_ordered[i,] > 0 ] = 1
+    word = names(mat_ordered[i, mat_ordered[i,] > 0])
+    mat_ordered[(i+1):nrow(mat_ordered), match(word,colnames(mat_ordered))] = 0
+    wc = c(wc, word)
+  }
+  
+  mat_3 = mat_ordered[match(wc, colnames(mat_ordered)), match(wc, colnames(mat_ordered))]
+  ord = colnames(mat_ordered)[which(!is.na(match(colnames(mat_ordered), colnames(mat_3))))]  
+  mat_4 = mat_3[match(ord, colnames(mat_3)), match(ord, colnames(mat_3))]
+  
+  graph <- graph.adjacency(mat_4, mode = "undirected", weighted=T)    
+  graph = simplify(graph) 
+  V(graph)$color[1:central.nodes] = "steelblue1"
+  V(graph)$color[(central.nodes+1):length(V(graph))] = "springgreen1"
+  
+  graph = delete.vertices(graph, V(graph)[ degree(graph) == 0 ]) 
+  
+  plot(graph, layout = layout.davidson.harel, main = title)
+} 
